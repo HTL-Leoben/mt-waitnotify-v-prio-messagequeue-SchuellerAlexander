@@ -5,7 +5,6 @@ import java.util.Random;
 public class Consumer extends Thread {
     private final PriorityMessageQueue queue;
     private final String name;
-    private final Random random = new Random();
 
     public Consumer(String name, PriorityMessageQueue queue) {
         this.name = name;
@@ -14,14 +13,14 @@ public class Consumer extends Thread {
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                Thread.sleep(random.nextInt(1500)); // zufällige Pause
-                Message msg = queue.receiveMessage();
-                System.out.println(name + " received: " + msg);
+        while (true) {
+            try {
+                Message msg = queue.take(); // blockiert, falls leer
+                System.out.println(name + " received: " + msg.getContent() + " (prio " + msg.getPriority() + ")");
+                Thread.sleep(200); // verarbeitet Nachricht
+            } catch (InterruptedException e) {
+                break;
             }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
         }
     }
 }

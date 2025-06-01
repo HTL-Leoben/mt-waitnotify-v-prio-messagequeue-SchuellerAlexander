@@ -5,7 +5,6 @@ import java.util.Random;
 public class Producer extends Thread {
     private final PriorityMessageQueue queue;
     private final String name;
-    private final Random random = new Random();
 
     public Producer(String name, PriorityMessageQueue queue) {
         this.name = name;
@@ -14,17 +13,11 @@ public class Producer extends Thread {
 
     @Override
     public void run() {
-        try {
-            while (true) {
-                Thread.sleep(random.nextInt(1000)); // zufällige Pause
-                boolean priority = random.nextBoolean();
-                String content = name + ": Message " + System.currentTimeMillis();
-                Message msg = new Message(priority, content);
-                queue.sendMessage(msg);
-                System.out.println(name + " sent: " + msg);
-            }
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
+        for (int i = 1; i <= 5; i++) {
+            int priority = (int) (Math.random() * 10); // zufällige Priorität
+            Message msg = new Message(name + " msg " + i, priority);
+            queue.put(msg); // Nachricht wird in Queue gelegt
+            try { Thread.sleep(100); } catch (InterruptedException ignored) {}
         }
     }
 }

@@ -1,35 +1,20 @@
 package at.htlle.pos4.prio_messagequeue;
 
-public class Message {
-    private Boolean isPrio;
-    private String content;
+public class Message implements Comparable<Message> {
+    private final String content;
+    private final int priority;
 
-    public Message(Boolean isPrio, String content) {
-        this.isPrio = isPrio;
+    public Message(String content, int priority) {
         this.content = content;
+        this.priority = priority;
     }
 
-    public Boolean isPriority() {
-        return isPrio;
-    }
-
-    public void setPrio(Boolean prio) {
-        isPrio = prio;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
+    public int getPriority() { return priority; }
+    public String getContent() { return content; }
 
     @Override
-    public String toString() {
-        return "Message{" +
-                "isPrio=" + isPrio +
-                ", content='" + content + '\'' +
-                '}';
+    public int compareTo(Message o) {
+        return Integer.compare(o.priority, this.priority); // absteigend!
     }
 }
+

@@ -1,36 +1,23 @@
 package at.htlle.pos4.prio_messagequeue;
 
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 
 public class PriorityMessageQueue {
-    private final int maxSize;
-    private final Queue<Message> priorityQueue = new LinkedList<>();
-    private final Queue<Message> normalQueue = new LinkedList<>();
+    private final List<Message> queue = new LinkedList<>();
 
-    public PriorityMessageQueue(int maxSize) {
-        this.maxSize = maxSize;
+    public synchronized void put(Message msg) {
+        queue.add(msg);
+        queue.sort(null); // sortiert mit compareTo
+        notifyAll(); // weckt wartende Threads
     }
-    public synchronized void sendMessage(Message msg) throws InterruptedException {
 
-    }
-    public synchronized Message receiveMessage() throws InterruptedException {
-        while (isEmpty()) {
-            wait();
+    public synchronized Message take() throws InterruptedException {
+        while (queue.isEmpty()) {
+            wait(); // wartet auf neue Nachricht
         }
-
-        Message msg = !priorityQueue.isEmpty() ? priorityQueue.poll() : normalQueue.poll();
-        notifyAll(); // Weckt wartende Producer
-        return msg;
+        return queue.remove(0); // höchste Priorität
     }
-
-    private int size() {
-        return priorityQueue.size() + normalQueue.size();
-    }
-
-    private boolean isEmpty() {
-        return priorityQueue.isEmpty() && normalQueue.isEmpty();
-    }
-
 }
